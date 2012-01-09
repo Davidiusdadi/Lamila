@@ -7,10 +7,7 @@ import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 /**
  * This class provides framework-global data
@@ -25,8 +22,8 @@ public class Lamilastatics {
 	/**
 	 * if true there will be debug output
 	 */
-	public static final boolean debugoutput = true;
-	public static final boolean countio = true;
+	public static final boolean debugoutput = false;
+	public static final boolean countio = false;
 	public static final ExecutorService executor = Executors.newCachedThreadPool();
 	private static DynamicContent configuration;
 	private static boolean ready = false;
@@ -49,31 +46,6 @@ public class Lamilastatics {
 	 *             If the propertyfile couldn't be read.
 	 */
 	public static void setup() {
-
-		try {
-			configuration = new DynamicContent( "\\ini\\Messageusetage.properties" );
-			File f = new File( "C:/Users/David/Desktop/webtouchlog.log" );
-			f.delete();
-			f.createNewFile();
-			Outsplitter p = new Outsplitter( f, System.out );
-			System.setOut( p );
-			System.setErr( p );
-			// This block configure the logger with handler and formatter
-			FileHandler fh = new FileHandler( "C:/Users/David/Desktop/webtouchlog.log", true );
-			logger.addHandler( fh );
-			logger.setLevel( Level.ALL );
-			SimpleFormatter formatter = new SimpleFormatter();
-			fh.setFormatter( formatter );
-
-			// the following statement is used to log any messages
-			// logger.log( Level.WARNING , "My first log" );
-
-		} catch ( SecurityException e ) {
-			e.printStackTrace();
-		} catch ( IOException e ) {
-			e.printStackTrace();
-		}
-
 	}
 
 	public static void print( String s ) {

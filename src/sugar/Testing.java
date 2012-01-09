@@ -126,8 +126,8 @@ public class Testing {
 	public static void testCommunication() throws Exception {
 		Lamilastatics.println( "Teste Kommunikation" );
 		Correlators correls = new Correlators();
-		correls.registerCorrelator( Hashcodecorrelator.getInstance() );
-		correls.registerCorrelator( MetaCorellator.getInstance() );
+		correls.putCorrelator( Hashcodecorrelator.getInstance() );
+		correls.putCorrelator( MetaCorellator.getInstance() );
 
 		InetSocketAddress adress = new InetSocketAddress( InetAddress.getLocalHost(), 4000 );
 
