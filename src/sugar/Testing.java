@@ -98,7 +98,6 @@ public class Testing {
 		try {
 			// new UDPTest( 1000 );
 			// globalstatics.println(bin & mask);
-			Lamilastatics.setup();
 			testTagDiff();
 			testMessages();
 			testCommunication();

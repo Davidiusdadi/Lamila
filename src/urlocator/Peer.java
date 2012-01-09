@@ -72,7 +72,7 @@ public class Peer implements Messagehandler {
 
 	protected static SearchAdvisor republishingadvisor = new StaticSeachStrategie( 20000, 10, 3000, 3, Lamilastatics.tsTimeout( 10000 ), 10 );
 
-	public IOCount iocount = Lamilastatics.countio ? new IOCount() : null;
+	public IOCount iocount = Lamilastatics.local_debug ? new IOCount() : null;
 	protected TransportLayer tranport;
 	protected CryptManager crypt;
 	protected Hashtable<Integer,List<PacketListener>> waitingnodes;
@@ -179,7 +179,7 @@ public class Peer implements Messagehandler {
 	 */
 	public void send( DirectedResponsemessage message ) throws IOException {
 		Lamilastatics.println( OutputKind.INFO, "push   " + message.toString() + " mesid: " + message.getRequestMessageId() );
-		if( Lamilastatics.countio )
+		if( Lamilastatics.local_debug )
 			iocount.out( message );
 		tranport.send( message );
 	}
@@ -202,7 +202,7 @@ public class Peer implements Messagehandler {
 			waitingnodes.put( ls.desiredMessageId(), list );
 		}
 		list.add( ls );
-		if( Lamilastatics.countio )
+		if( Lamilastatics.local_debug )
 			iocount.out( message );
 		tranport.send( message );
 	}
@@ -247,7 +247,7 @@ public class Peer implements Messagehandler {
 	public void handlePackage( TransportLayer transp, Buffercontent message ) throws UnknowPacketTypeException , IgnoringPackageException , InvalidPackageException , IOException {
 		if( Lamilastatics.debugoutput )
 			System.out.println( "got    " + message );
-		if( Lamilastatics.countio )
+		if( Lamilastatics.local_debug )
 			iocount.in( message );
 		if( message instanceof DirectedResponsemessage ) {
 			Responsemessage responder = (Responsemessage) message;

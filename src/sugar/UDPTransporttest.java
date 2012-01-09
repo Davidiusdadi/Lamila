@@ -86,7 +86,6 @@ public class UDPTransporttest {
 	 * @throws IOException
 	 */
 	public static void main( String[] args ) throws IOException {
-		Lamilastatics.setup();
 		new UDPTransporttest();
 	}
 }

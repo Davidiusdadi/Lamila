@@ -2,12 +2,10 @@ package globalstatic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 /**
  * This class provides framework-global data
@@ -23,29 +21,12 @@ public class Lamilastatics {
 	 * if true there will be debug output
 	 */
 	public static final boolean debugoutput = false;
-	public static final boolean countio = false;
+	public static final boolean local_debug = false;
+	private static PrintStream printstream = System.out;
 	public static final ExecutorService executor = Executors.newCachedThreadPool();
-	private static DynamicContent configuration;
-	private static boolean ready = false;
-	public static Logger logger = Logger.getLogger( "Webtouchlog" );
 
 	public enum OutputKind {
 		INFO , WARNING , ERROR , FATALERROR , UNKNOW;
-	}
-
-	public DynamicContent getConfiguration() {
-		if( configuration == null )
-			throw new RuntimeException( "static variables not initialiyed\nPlease call globalstatics.setup once before." );
-		return configuration;
-	}
-
-	/**
-	 * Initializes static members in this package and loads properties
-	 * 
-	 * @throws IOException
-	 *             If the propertyfile couldn't be read.
-	 */
-	public static void setup() {
 	}
 
 	public static void print( String s ) {
@@ -55,7 +36,7 @@ public class Lamilastatics {
 
 	public static void print( OutputKind level, String s ) {
 		if( debugoutput || level.ordinal() >= OutputKind.ERROR.ordinal() )
-			System.out.print( s );
+			printstream.print( s );
 	}
 
 	public static void print( Object s ) {
@@ -79,13 +60,18 @@ public class Lamilastatics {
 	}
 
 	public static long tsTimeout( long timeout ) {
-		// return timeout;
-		return Long.MAX_VALUE - System.currentTimeMillis() - 1;
+		return timeout;
+		// return Long.MAX_VALUE - System.currentTimeMillis() - 1;
 	}
 
 	public static int tsTimeout( int timeout ) {
 		return (int) tsTimeout( (long) timeout );
 	}
+
+	public static void setPrintStream( PrintStream p ) {
+		printstream = p;
+	}
+
 }
 
 class Outsplitter extends PrintStream {
