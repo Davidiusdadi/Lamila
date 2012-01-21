@@ -38,7 +38,7 @@ public class StoreRequest extends DirectedRequestmessage {
 		byte[] key = new byte[ keylength ];
 		bb.get( ident );
 		bb.get( key );
-		UnspecificNode node = new UnspecificNode( getAdress(), ident );
+		UnspecificNode node = new UnspecificNode( getAddress(), ident );
 		node.putKey( getCorrelatorId(), key );
 		return node;
 	}

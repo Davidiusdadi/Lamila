@@ -1,56 +1,41 @@
 package iospeci.transport.UDPTransport;
 
-import globalstatic.Lamilastatics;
 import iospeci.Buffercontent;
 import iospeci.UnknowTypeException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Timer;
 
 /**
  * This map will nerver contain more than an implementation specifc count of
- * elements. The removal of elements by timeout is not implemented.
+ * elements.
  */
-class CrumblingMap<K, V> {
-	private static Timer timer;
-	public static int defaulttimeout = Lamilastatics.tsTimeout( 5000 );
-	private HashMap<K,V> map;
-	private LinkedList<K> order;
-	private int timeout;
+public class CrumblingMap<K, V> {
+	protected Map<K,V> map;
+	protected LinkedList<K> order;
+	protected final int maxelements;
 
-	static void setTimer( Timer timer ) {
-		CrumblingMap.timer = timer;
-	}
-
-	public CrumblingMap() {
-		if( timer == null )
-			throw new IllegalStateException( "Please call CrumblingMap.setTimer once before" );
-		this.timeout = defaulttimeout;
-		map = new HashMap<K,V>();
-		order = new LinkedList<K>();
-	}
-
-	public CrumblingMap( int timeout ) {
-		if( timer == null )
-			throw new IllegalStateException( "Please call CrumblingMap.setTimer once before" );
-		this.timeout = timeout;
+	public CrumblingMap( int maxelements ) {
+		this.maxelements = maxelements;
 		map = new HashMap<K,V>();
 		order = new LinkedList<K>();
 	}
 
 	public void put( K key, V value ) {
-		// Task t = new Task( key , value );
-		// timer.schedule( t , timeout , Long.MAX_VALUE );
 		map.put( key, value );
 		order.add( key );
-		if( order.size() > 10 )
+		if( order.size() > maxelements )
 			map.remove( order.remove( 0 ) );
 	}
 
-	V get( K key ) {
+	public V get( K key ) {
 		return map.get( key );
+	}
+
+	public void clear() {
+		map.clear();
 	}
 
 	@Override

@@ -2,6 +2,11 @@ package iospeci.transport.UDPTransport;
 
 import iospeci.Buffercontent;
 import iospeci.DirectedMessage;
+import iospeci.InvalidPackageException;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 class DirectedContet implements DirectedMessage {
 	private byte[] adress;
@@ -27,5 +32,14 @@ class DirectedContet implements DirectedMessage {
 	@Override
 	public Buffercontent getContent() {
 		return buf;
+	}
+
+	@Override
+	public InetSocketAddress getAddress() {
+		try {
+			return new InetSocketAddress( InetAddress.getByAddress( getHost() ), getPort() );
+		} catch ( UnknownHostException e ) {
+			throw new InvalidPackageException( e );
+		}
 	}
 }

@@ -60,6 +60,15 @@ public abstract class DirectedResponsemessage extends Responsemessage implements
 		return bb.getInt( super.getBufferoffset() );
 	}
 
+	@Override
+	public InetSocketAddress getAddress() {
+		try {
+			return new InetSocketAddress( InetAddress.getByAddress( getHost() ), getPort() );
+		} catch ( UnknownHostException e ) {
+			throw new InvalidPackageException( e );
+		}
+	}
+
 	public InetSocketAddress getDestenationAdress() {
 		try {
 			return new InetSocketAddress( InetAddress.getByAddress( getHost() ), getPort() );

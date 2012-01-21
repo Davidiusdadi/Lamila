@@ -68,7 +68,8 @@ public abstract class DirectedRequestmessage extends Requestmessage implements D
 		return bb.getInt( super.getBufferoffset() );
 	}
 
-	public InetSocketAddress getAdress() {
+	@Override
+	public InetSocketAddress getAddress() {
 		try {
 			return new InetSocketAddress( InetAddress.getByAddress( getHost() ), getPort() );
 		} catch ( UnknownHostException e ) {

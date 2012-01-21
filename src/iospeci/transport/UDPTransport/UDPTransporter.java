@@ -49,7 +49,6 @@ public class UDPTransporter implements TransportLayer {
 		Buffercontent.addOptainer( Reordermessage.class );
 
 		timer = new Timer( "PacketSheduler", true );
-		CrumblingMap.setTimer( timer );
 	}
 	private Thread thisthread;
 	private DatagramSocket socket;
@@ -354,7 +353,7 @@ public class UDPTransporter implements TransportLayer {
 	private void send( Integer packid, DatagramPacket pack ) throws IOException {
 		CrumblingMap<Integer,byte[]> m = tokeep.get( pack.getSocketAddress() );
 		if( m == null ) {
-			m = new CrumblingMap<Integer,byte[]>();
+			m = new CrumblingMap<Integer,byte[]>( 100 );//TODO made max mapsize configurable
 			tokeep.put( pack.getSocketAddress(), m );
 		}
 		m.put( packid, pack.getData() );
