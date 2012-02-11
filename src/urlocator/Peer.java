@@ -93,6 +93,20 @@ public class Peer implements Messagehandler {
 		return null;
 	}
 
+	public static List<Node> filterResult( List<Node> nodes, int correlatorid, byte[] value ) {
+
+		List<Node> res = new LinkedList<Node>();
+
+		for( Node node : nodes ) {
+			byte[] key = node.getKey( correlatorid );
+
+			if( key != null && Arrays.equals( key, value ) ) {
+				res.add( node );
+			}
+		}
+
+		return res;
+	}
 	/**
 	 * @param socket
 	 *            The socket on which the communication with the network will
