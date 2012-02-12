@@ -20,9 +20,9 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
+import correlation.Correlator;
 import correlation.Hashcodecorrelator;
 import correlation.MetaCorellator;
-import correlation.Correlator;
 
 /**
  * Represents one node in the network AND the view of a node in the network. If
@@ -38,7 +38,7 @@ public abstract class Node {
 	private final Map<Integer,byte[]> key;// TODO make the nodes keys sorted. This could be important for Syncpaths who order their identifers
 	private final Map<Integer,List<Link>> links;
 
-	private static String hashMD5String( String message ) {
+	public static String hashMD5String( String message ) {
 		try {
 			MessageDigest md = MessageDigest.getInstance( "MD5" );
 			return hex( md.digest( message.getBytes( "CP1252" ) ) );
@@ -47,7 +47,7 @@ public abstract class Node {
 		return null;
 	}
 
-	private static String hex( byte[] array ) {
+	public static String hex( byte[] array ) {
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0 ; i < array.length ; ++i ) {
 			sb.append( Integer.toHexString( ( array[ i ] & 0xFF ) | 0x100 ).toLowerCase().substring( 1, 3 ) );
