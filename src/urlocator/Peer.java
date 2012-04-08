@@ -164,7 +164,7 @@ public class Peer implements Messagehandler {
 		if( restroetask != null )
 			restroetask.cancel();
 		restroetask = new LinkStoringTask();
-		timer.scheduleAtFixedRate( restroetask, 0, interval );
+		// timer.scheduleAtFixedRate( restroetask, 0, interval );
 	}
 
 	/* @Override

@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 
 import searching.SearchAdvisor;
 import urlocator.Node;
-import urlocator.NotImplementetException;
+import urlocator.NotImplementedException;
 import urlocator.Peer;
 
 /**
@@ -36,12 +36,12 @@ public class IPAdressCorrelator implements Correlator {
 
 	@Override
 	public int correlate( byte[] key1, byte[] key2 ) {
-		throw new NotImplementetException( "see class decription" );
+		throw new NotImplementedException( "see class decription" );
 	}
 
 	@Override
 	public int getConvictionCount() {
-		throw new NotImplementetException( "see class decription" );
+		throw new NotImplementedException( "see class decription" );
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class IPAdressCorrelator implements Correlator {
 
 	@Override
 	public SearchAdvisor getSearchAdvisor() {
-		throw new NotImplementetException( "see class decription" );
+		throw new NotImplementedException( "see class decription" );
 	}
 
 	public static InetSocketAddress getFromKey( byte[] key ) throws UnknownHostException {
