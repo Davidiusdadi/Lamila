@@ -154,7 +154,7 @@ public class Testing {
 		for( int i = 1 ; i < networksize ; i++ ) {
 			allnodes[ i ] = new TestNode( adress, "uri" + i );
 			allnodes[ i ].putKey( MetaCorellator.id, getNextTags().getBytes( Lamilastatics.charset ) );
-			LinkedList<Node> resp = null;
+			List<Node> resp = null;
 
 			try {
 				resp = networkcon.publish( correl, allnodes[ i ], advisorfire );
@@ -184,7 +184,7 @@ public class Testing {
 				LinkedList<Node> searchlist = new LinkedList<Node>();
 				searchlist.add( new TestNode( allnodes[ j ] ) );
 				try {
-					Node result = networkcon.searchFor( MetaCorellator.id, search.getKey( MetaCorellator.id ), advisorfire, searchlist ).getFirst();
+					Node result = networkcon.searchFor( MetaCorellator.id, search.getKey( MetaCorellator.id ), advisorfire, searchlist ).get( 0 );
 				} catch ( OperationFailedException e ) {
 					e.printStackTrace();
 				}

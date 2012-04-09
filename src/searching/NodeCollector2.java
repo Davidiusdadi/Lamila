@@ -3,6 +3,7 @@ package searching;
 import globalstatic.Lamilastatics;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
@@ -10,9 +11,9 @@ import urlocator.Node;
 import urlocator.Peer;
 import correlation.Correlator;
 
-public class NodeCollector2 implements Searchprocess, Callable<LinkedList<Node>> {
+public class NodeCollector2 implements Searchprocess, Callable<List<Node>> {
 	private Searchdata cache;
-	private Future<LinkedList<Node>> fullresult;
+	private Future<List<Node>> fullresult;
 	private boolean wasSuccesful = false;
 	private SearchAdvisor advisor;
 	private int resultcount;
@@ -45,7 +46,7 @@ public class NodeCollector2 implements Searchprocess, Callable<LinkedList<Node>>
 	}
 
 	@Override
-	public Future<LinkedList<Node>> startSearch() {
+	public Future<List<Node>> startSearch() {
 		return fullresult = Lamilastatics.executor.submit( this );
 	}
 
@@ -60,7 +61,7 @@ public class NodeCollector2 implements Searchprocess, Callable<LinkedList<Node>>
 	}
 
 	@Override
-	public LinkedList<Node> call() throws Exception {
+	public List<Node> call() throws Exception {
 		throw new RuntimeException();
 	}
 }

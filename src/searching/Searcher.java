@@ -6,6 +6,7 @@ import iospeci.PointerRequest;
 
 import java.net.UnknownHostException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
@@ -24,7 +25,7 @@ import correlation.Correlator;
  * 
  * @author David Rohmer
  */
-public class Searcher implements Callable<LinkedList<Node>>, Searchprocess {
+public class Searcher implements Callable<List<Node>>, Searchprocess {
 	class ResponseWaiter implements RetrieverListener {
 		int timeout;
 
@@ -58,11 +59,11 @@ public class Searcher implements Callable<LinkedList<Node>>, Searchprocess {
 	private final Correlator correlator;
 	private final byte[] key;
 	private Peer connection;
-	private LinkedList<Node> searchentys = new LinkedList<Node>();
+	private List<Node> searchentys = new LinkedList<Node>();
 	private Searchdata cache;
 	private ResponseWaiter waiter;
 	private boolean wasSuccesful = false;
-	private Future<LinkedList<Node>> futur = null;
+	private Future<List<Node>> futur = null;
 	private SearchAdvisor advisor;
 	private boolean wasstarted = false;
 
@@ -78,7 +79,7 @@ public class Searcher implements Callable<LinkedList<Node>>, Searchprocess {
 	 * @param advisor
 	 *            The advisor of this search
 	 */
-	public Searcher( Peer connection , Correlator correlator , byte[] key , LinkedList<Node> entrys , SearchAdvisor advisor , int resultcount ) {
+	public Searcher( Peer connection , Correlator correlator , byte[] key , List<Node> entrys , SearchAdvisor advisor , int resultcount ) {
 		this.key = key;
 		this.advisor = advisor;
 		this.correlator = correlator;
@@ -88,7 +89,7 @@ public class Searcher implements Callable<LinkedList<Node>>, Searchprocess {
 		cache = new Searchdata( key, correlator, advisor, resultcount );
 	}
 
-	public Future<LinkedList<Node>> startSearch() {
+	public Future<List<Node>> startSearch() {
 		wasstarted = true;
 		return futur = Lamilastatics.executor.submit( this );
 	}
@@ -98,7 +99,8 @@ public class Searcher implements Callable<LinkedList<Node>>, Searchprocess {
 	}
 
 	@Override
-	public LinkedList<Node> call() throws Exception {
+	public List<Node> call() throws Exception {
+		wasstarted = true;
 		int loops = 0;
 		int emtyloops = 0;
 		// System.out.println("Starte Suche");

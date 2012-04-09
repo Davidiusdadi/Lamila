@@ -32,4 +32,6 @@ public interface Correlator {
 	public SearchAdvisor getSearchAdvisor();
 
 	public Class<?> getKeyRepresentationType();
+
+	// public Class<?> getKeyTransfereType();
 }

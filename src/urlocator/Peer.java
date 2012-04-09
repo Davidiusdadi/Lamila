@@ -387,8 +387,8 @@ public class Peer implements Messagehandler {
 	 * @return The nodes which will point to the published node and published
 	 *         node points at.
 	 */
-	public LinkedList<Node> publish( final Correlator correlator, final Node newnode, final SearchAdvisor advisor ) throws OperationFailedException {
-		LinkedList<Node> nodes = null;
+	public List<Node> publish( final Correlator correlator, final Node newnode, final SearchAdvisor advisor ) throws OperationFailedException {
+		List<Node> nodes = null;
 		if( newnode == null )
 			throw new IllegalArgumentException( "node can't be null" );
 		if( newnode.getAdress() == null ) {
@@ -453,7 +453,7 @@ public class Peer implements Messagehandler {
 	 * @throws ExecutionException
 	 * @throws OperationFailedException
 	 */
-	public LinkedList<Node> searchFor( Correlator c, byte[] key, SearchAdvisor advisor, Collection<Node> enty ) throws OperationFailedException {
+	public List<Node> searchFor( Correlator c, byte[] key, SearchAdvisor advisor, List<Node> enty ) throws OperationFailedException {
 		if( c instanceof IPAdressCorrelator ) {
 			return new LinkedList<Node>();// A IPadress alone does not last to find a node.
 		}
@@ -463,27 +463,26 @@ public class Peer implements Messagehandler {
 			throw new OperationFailedException( "There is no key on the given layer" );
 		Searchprocess searcher = new Searcher( this, c, key, fillInKey( enty, c.getCorrelatorId(), advisor.getNodeRequestTimeout() ), advisor, c.getConvictionCount() );
 		try {
-			return searcher.startSearch().get();
-		} catch ( InterruptedException e ) {
-			throw new OperationFailedException( e );
-		} catch ( ExecutionException e ) {
+			List<Node> res = searcher.call();
+			return fillInKey( res, c.getCorrelatorId(), advisor.getNodeRequestTimeout() );
+		} catch ( Exception e ) {
 			throw new OperationFailedException( e );
 		}
 	}
 
-	public LinkedList<Node> searchFor( Correlator c, byte[] key ) throws OperationFailedException {
+	public List<Node> searchFor( Correlator c, byte[] key ) throws OperationFailedException {
 		return searchFor( c, key, c.getSearchAdvisor(), getNetworkentrys( c.getCorrelatorId(), Lamilastatics.tsTimeout( getDefaultTimeout() ) ) );
 	}
 
-	public LinkedList<Node> searchFor( int correlatorid, byte[] key, SearchAdvisor advisor, Collection<Node> searchlist ) throws OperationFailedException {
+	public List<Node> searchFor( int correlatorid, byte[] key, SearchAdvisor advisor, List<Node> searchlist ) throws OperationFailedException {
 		return searchFor( correlators.getCorrelator( correlatorid ), key, advisor, searchlist );
 	}
 
-	public LinkedList<Node> searchFor( int correlatorid, byte[] key, SearchAdvisor advisor ) throws OperationFailedException {
+	public List<Node> searchFor( int correlatorid, byte[] key, SearchAdvisor advisor ) throws OperationFailedException {
 		return searchFor( correlators.getCorrelator( correlatorid ), key, advisor, getNetworkentrys( correlatorid, Lamilastatics.tsTimeout( getDefaultTimeout() ) ) );
 	}
 
-	public LinkedList<Node> searchFor( int correlatorid, byte[] key ) throws OperationFailedException {
+	public List<Node> searchFor( int correlatorid, byte[] key ) throws OperationFailedException {
 		return searchFor( correlators.getCorrelator( correlatorid ), key );
 	}
 
@@ -528,27 +527,20 @@ public class Peer implements Messagehandler {
 	 *            The layer to which the keys belong.
 	 * @throws OperationFailedException
 	 */
-	public LinkedList<Node> fillInKey( Collection<Node> nodes, int correlatorid, int timeout ) throws OperationFailedException {
-
-		LinkedList<Node> updateednodes = new LinkedList<Node>();
+	public List<Node> fillInKey( List<Node> nodes, int correlatorid, int timeout ) throws OperationFailedException {
 		if( !nodes.isEmpty() )
 			synchronized ( nodes ) {
 				Iterator<Node> i = nodes.iterator();
 				Node n;
 				while ( i.hasNext() ) {
 					n = i.next();
-					try {
-						fillInKey( n, correlatorid, timeout );
-						updateednodes.add( (Node) n );
-					} catch ( OperationFailedException e ) {
-						e.printStackTrace();
-						// TODO Log this critical OperationFailedException
-					}
+					fillInKey( n, correlatorid, timeout );
+					// updateednodes.add( (Node) n );
 				}
 			}
-		if( !nodes.isEmpty() && updateednodes.isEmpty() )
-			throw new OperationFailedException( "Couldn't reach any of the specified Nodes: " + nodes );
-		return updateednodes;
+		// if( !nodes.isEmpty() && updateednodes.isEmpty() )
+		// throw new OperationFailedException( "Couldn't reach any of the specified Nodes: " + nodes );
+		return nodes;
 	}
 
 	/**
@@ -584,7 +576,7 @@ public class Peer implements Messagehandler {
 	 * @return
 	 * @throws OperationFailedException
 	 */
-	public LinkedList<Node> getNetworkentrys( int correlatorid, int timeout ) throws OperationFailedException {
+	public List<Node> getNetworkentrys( int correlatorid, int timeout ) throws OperationFailedException {
 		return fillInKey( networkentys, correlatorid, timeout );
 	}
 
@@ -604,7 +596,7 @@ public class Peer implements Messagehandler {
 
 	}
 
-	public LinkedList<Node> publish( int correlatorid, Node newnode ) throws OperationFailedException {
+	public List<Node> publish( int correlatorid, Node newnode ) throws OperationFailedException {
 		Correlator correl = correlators.resolveCorrelator( correlatorid );
 		return publish( correl, newnode, correl.getSearchAdvisor() );
 	}
