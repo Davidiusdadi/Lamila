@@ -126,7 +126,7 @@ public class UDPTransporter implements TransportLayer {
 		byte[] bytes = decryptAsNessesary( (InetSocketAddress) packet.getSocketAddress(), packet.getData(), packet.getLength() );
 
 		Buffercontent buf = Buffercontent.convert( (InetSocketAddress) packet.getSocketAddress(), bytes.length, bytes );
-		Lamilastatics.println( OutputKind.INFO, "handle " + buf );
+		Lamilastatics.println( OutputKind.TRANSPORT, "handle " + buf );
 		if( buf.getMessageType() < 0 )
 			processTransport( (InetSocketAddress) packet.getSocketAddress(), buf );
 		else
@@ -137,20 +137,21 @@ public class UDPTransporter implements TransportLayer {
 		try {
 			Buffercontent c = Buffercontent.convert( (InetSocketAddress) pack.getSocketAddress(), pack.getData().length, pack.getData() );
 
-			if( /* c.getMessageType() >= 0 && */Lamilastatics.debugoutput ) {
-				System.out.print( "write  " + c.toString() + " :" );
+			if( Lamilastatics.debugoutput ) {
+				Lamilastatics.println( OutputKind.TRANSPORT, "write  " + c.toString() + " :" );
+				/*
 				StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 				for( int i = 0 ; i < stack.length ; i++ ) {
 					if( !stack[ i ].toString().contains( ".send" ) && i > 0 ) {
-						System.out.println( stack[ i ].toString() );
+						Lamilastatics.println( OutputKind.TRANSPORT, stack[ i ].toString() );
 						break;
 					}
-				}
+				}*/
 				// new Throwable().printStackTrace( System.out );
 			}
 		} catch ( Exception e ) {
 			if( Buffercontent.getCryption( pack.getData() ) != Buffercontent.NO_ENCRYPTION )
-				System.out.println( "Send Crypted XXX" );
+				Lamilastatics.println( OutputKind.TRANSPORT, "Send Crypted XXX" );
 			else
 				throw new RuntimeException( e );
 		}
@@ -165,11 +166,12 @@ public class UDPTransporter implements TransportLayer {
 		Hashtable<Integer,Integer> aw = awaited.get( adres );
 		if( aw == null || aw.isEmpty() )
 			return;
-		Integer transid = aw.remove( buf.getPacketId() );
 		if( aw.isEmpty() ) {
 			awaited.remove( adres );
 			Lamilastatics.println( OutputKind.ERROR, "Dropped (not awaited)" + buf );
 		}
+		Integer transid = aw.remove( buf.getPacketId() );
+
 		HashMap<Integer,Recepient> recs = recepiencts.get( adres );
 		if( recs == null ) {
 			Lamilastatics.println( OutputKind.ERROR, "Dropped (unkow peer)" + buf );
@@ -353,7 +355,7 @@ public class UDPTransporter implements TransportLayer {
 	private void send( Integer packid, DatagramPacket pack ) throws IOException {
 		CrumblingMap<Integer,byte[]> m = tokeep.get( pack.getSocketAddress() );
 		if( m == null ) {
-			m = new CrumblingMap<Integer,byte[]>( 100 );//TODO made max mapsize configurable
+			m = new CrumblingMap<Integer,byte[]>( 100 );// TODO made max mapsize configurable
 			tokeep.put( pack.getSocketAddress(), m );
 		}
 		m.put( packid, pack.getData() );
@@ -494,7 +496,7 @@ public class UDPTransporter implements TransportLayer {
 				Buffercontent b = it.next();
 				if( b.getPacketId() == deliverindex ) {
 					++deliverindex;
-					Lamilastatics.println( OutputKind.INFO, "feed   " + b );
+					Lamilastatics.println( OutputKind.TRANSPORT, "feed   " + b );
 					handeler.handlePackage( UDPTransporter.this, b );
 					it.remove();
 				}
