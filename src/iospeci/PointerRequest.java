@@ -5,8 +5,6 @@ import globalstatic.Lamilastatics;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
-import urlocator.Node;
-
 /**
  * Represents a Requestmessage for nodeids with have a smaller distance to the
  * given key than the retriver.
@@ -84,7 +82,7 @@ public class PointerRequest extends DirectedRequestmessage {
 	// }
 	@Override
 	public String toString() {
-		return super.toString() + " long: " + Node.convertBytes2Long( getNodeId() ) + " for str: " + new String( getNodeId(), Lamilastatics.charset );
+		return super.toString() + " cid: " + getCorrelatorId() + " value: " + new String( getKey(), Lamilastatics.charset );
 	}
 
 	@Override

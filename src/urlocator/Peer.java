@@ -107,6 +107,7 @@ public class Peer implements Messagehandler {
 
 		return res;
 	}
+
 	/**
 	 * @param socket
 	 *            The socket on which the communication with the network will
@@ -209,7 +210,7 @@ public class Peer implements Messagehandler {
 	 * @throws IOException
 	 */
 	public void send( DirectedRequestmessage message, PacketListener ls ) throws IOException {
-		Lamilastatics.println( OutputKind.INFO, "sending " + message.toString() + " mesid: " + message.getMessageId() + " zu " + InetAddress.getByAddress( message.getHost() ) );
+		Lamilastatics.println( OutputKind.IO, "sending " + message.toString() + " mesid: " + message.getMessageId() + " zu " + InetAddress.getByAddress( message.getHost() ) );
 		List<PacketListener> list = waitingnodes.get( ls.desiredMessageId() );
 		if( list == null ) {
 			list = new LinkedList<PacketListener>();
@@ -260,7 +261,7 @@ public class Peer implements Messagehandler {
 
 	public void handlePackage( TransportLayer transp, Buffercontent message ) throws UnknowPacketTypeException , IgnoringPackageException , InvalidPackageException , IOException {
 		if( Lamilastatics.debugoutput )
-			System.out.println( "got    " + message );
+			Lamilastatics.println( OutputKind.TRANSPORT, "got    " + message );
 		if( Lamilastatics.local_debug )
 			iocount.in( message );
 		if( message instanceof DirectedResponsemessage ) {
@@ -300,10 +301,11 @@ public class Peer implements Messagehandler {
 			throw new IgnoringPackageException( "no such correlator" );
 		int hostdiff = c.correlate( mes.getKey(), hosted.getKey( mes.getCorrelatorId() ) );
 
-		List<Link> nodes = hosted.getLinks( mes.getCorrelatorId() );
+		List<Link> nodes = hosted.getLinks( mes.getCorrelatorId() );;
 		List<PointerResponse> responses = new LinkedList<PointerResponse>();
 		for( Link l : nodes ) {
 			Node n = l.getNode();
+			Lamilastatics.println( OutputKind.IO, "Link: " + n );
 			PointerResponse presp = new PointerResponse( mes, n, c.correlate( mes.getKey(), n.getKey( mes.getCorrelatorId() ) ) );
 			if( hostdiff > presp.getDistance() || mes.getLeafes() == SearchAdvisor.PUSH_ALL )
 				responses.add( presp );
@@ -329,6 +331,7 @@ public class Peer implements Messagehandler {
 		for( int i = 0 ; i < responsecount ; i++ )
 			recstream.append( it.next() );
 	}
+
 	private int correlate( byte[] key, byte[] key2, int correlatorId ) throws NoSuchCorrelatorException {
 		Correlator cor = correlators.getCorrelator( correlatorId );
 		if( cor == null ) {
@@ -336,6 +339,7 @@ public class Peer implements Messagehandler {
 		}
 		return cor.correlate( key, key2 );
 	}
+
 	private void handleKeyRequest( KeyRequest request ) throws IOException , IgnoringPackageException {
 		Node n = hostednodes.get( new ByteArrayWrapper( request.getNodeId() ) );
 		byte[] key = null;
@@ -397,6 +401,8 @@ public class Peer implements Messagehandler {
 			putNode( newnode.getUniqueId(), newnode );
 			Lamilastatics.println( OutputKind.INFO, "netentry " + new String( newnode.getUniqueId(), Lamilastatics.charset ) );
 			addNetworkEnty( newnode );
+			nodes = new LinkedList<Node>();
+			nodes.add( newnode );
 		} else {
 			double time1 = System.currentTimeMillis() / (double) 1000;
 			nodes = searchFor( correlator, newnode.getKey( correlator.getCorrelatorId() ), advisor, networkentys );
@@ -503,7 +509,7 @@ public class Peer implements Messagehandler {
 	 * Puts the given node into the entymap.
 	 */
 	public void addNetworkEnty( Node n ) {
-		Lamilastatics.println( OutputKind.INFO, "Add Networkenty: " + new String( n.getUniqueId(), Lamilastatics.charset ) + "," + Arrays.hashCode( n.getUniqueId() ) + "," + Arrays.toString( n.getUniqueId() ) );
+		Lamilastatics.println( OutputKind.INFO, "Add Networkenty: " + n );
 		networkentys.add( n );
 	}
 

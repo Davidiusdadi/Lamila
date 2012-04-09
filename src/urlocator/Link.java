@@ -62,4 +62,9 @@ public class Link {
 	public boolean equals( Object obj ) {
 		return node.equals( obj );
 	}
+
+	@Override
+	public String toString() {
+		return node + "";
+	}
 }

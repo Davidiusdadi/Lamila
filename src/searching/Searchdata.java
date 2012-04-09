@@ -168,14 +168,13 @@ public class Searchdata extends AbstractSearchstate {
 		if( itskey == null )
 			throw new IllegalArgumentException();
 		int dist = searchlayercorrelator.correlate( key, itskey );
-		Lamilastatics.println( OutputKind.INFO, "recognize dis: " + dist + " node: " + nodewithkey );
 		int nodeindex;
 		synchronized ( result ) {
 			nodeindex = getListPosi( result, dist );
 			result.add( nodeindex, nodewithkey );
-			Lamilastatics.println( "pre sort in 4 result : node" + nodewithkey + " dis: " + dist );
-			if( result.size() > maxresults )
+			if( result.size() > maxresults ) {
 				result.removeLast();
+			}
 		}
 		node2dist.put( Arrays.hashCode( nodewithkey.getUniqueId() ), dist );
 	}
@@ -187,7 +186,6 @@ public class Searchdata extends AbstractSearchstate {
 		synchronized ( pathpointer ) {
 			nodeindex = getListPosi( pathpointer, dist );
 			pathpointer.add( nodeindex, node );
-			Lamilastatics.println( OutputKind.INFO, "sortin for pop : node" + node + " dis: " + dist );
 			if( pathpointer.size() > advisor.getMaximumPathCount() )
 				pathpointer.removeLast();
 		}
@@ -196,13 +194,13 @@ public class Searchdata extends AbstractSearchstate {
 				return;
 			nodeindex = getListPosi( result, dist );
 			result.add( nodeindex, node );
-			Lamilastatics.println( "sortin 4 result : node" + node + " dis: " + dist );
+			Lamilastatics.println( OutputKind.SEARCH, "inserting: " + nodeindex + " dis: " + dist + " node " + node );
 			// if (Peer.printio)
 			if( result.size() > searchlayercorrelator.getConvictionCount() ) {
-				result.removeLast();
+				Node n = result.removeLast();
+				Lamilastatics.println( OutputKind.SEARCH, "discard result: " + n );
 			}
 		}
-		Lamilastatics.println( "so " + result );
 		node2dist.put( Arrays.hashCode( node.getUniqueId() ), dist );
 	}
 

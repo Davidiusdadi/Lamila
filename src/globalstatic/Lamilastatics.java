@@ -26,7 +26,7 @@ public class Lamilastatics {
 	public static final ExecutorService executor = Executors.newCachedThreadPool();
 
 	public enum OutputKind {
-		INFO , WARNING , ERROR , FATALERROR , UNKNOW;
+		INFO , SEARCH , WARNING , IO , TRANSPORT , ERROR , FATALERROR , UNKNOW;
 	}
 
 	public static void print( String s ) {
@@ -35,7 +35,7 @@ public class Lamilastatics {
 	}
 
 	public static void print( OutputKind level, String s ) {
-		if( debugoutput || level.ordinal() >= OutputKind.ERROR.ordinal() )
+		if( debugoutput && ( ( level.ordinal() <= OutputKind.INFO.ordinal() ) ) || ( level.ordinal() >= OutputKind.ERROR.ordinal() ) )
 			printstream.print( s );
 	}
 
@@ -52,7 +52,7 @@ public class Lamilastatics {
 	}
 
 	public static void println( OutputKind level, Object s ) {
-		print( s + "\n" );
+		print( level, s + "\n" );
 	}
 
 	public static void println() {

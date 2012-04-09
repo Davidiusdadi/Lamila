@@ -35,7 +35,7 @@ import correlation.MetaCorellator;
 public abstract class Node {
 
 	private InetSocketAddress adress;
-	private final Map<Integer,byte[]> key;// TODO make the nodes keys sorted. This could be important for Syncpaths who order their identifers
+	private final Map<Integer,byte[]> keys;// TODO make the nodes keys sorted. This could be important for Syncpaths who order their identifers
 	private final Map<Integer,List<Link>> links;
 
 	public static String hashMD5String( String message ) {
@@ -150,7 +150,7 @@ public abstract class Node {
 		if( adress == null || adress.isUnresolved() )
 			throw new IllegalArgumentException( "adress cant be null or Unresolved" );
 		this.adress = adress;
-		this.key = (Map<Integer,byte[]>) Collections.synchronizedMap( new HashMap<Integer,byte[]>() );
+		this.keys = (Map<Integer,byte[]>) Collections.synchronizedMap( new HashMap<Integer,byte[]>() );
 		links = (Map<Integer,List<Link>>) Collections.synchronizedMap( new HashMap<Integer,List<Link>>() );
 		// putKey( Hashcodecorrelator.id , nodeid );
 	}
@@ -159,14 +159,14 @@ public abstract class Node {
 	 * Copys the given node flat.
 	 */
 	public Node( Node tocopy ) {
-		key = tocopy.key;
+		keys = tocopy.keys;
 		links = tocopy.links;
 		adress = tocopy.adress;
 	}
 
 	protected Node() {
 		this.adress = null;
-		this.key = (Map<Integer,byte[]>) Collections.synchronizedMap( new HashMap<Integer,byte[]>() );
+		this.keys = (Map<Integer,byte[]>) Collections.synchronizedMap( new HashMap<Integer,byte[]>() );
 		links = (Map<Integer,List<Link>>) Collections.synchronizedMap( new HashMap<Integer,List<Link>>() );
 		// putKey( Hashcodecorrelator.id , nodeid );
 	}
@@ -254,14 +254,14 @@ public abstract class Node {
 	 * Sets the key of this node on the given layer
 	 */
 	protected void putKey( int correlatorid, byte[] key ) {
-		this.key.put( correlatorid, key );
+		this.keys.put( correlatorid, key );
 	}
 
 	/**
 	 * Sets the key of this node on the given layer
 	 */
 	protected void putKey( int correlatorid, String key ) {
-		this.key.put( correlatorid, key.getBytes( Lamilastatics.charset ) );
+		this.keys.put( correlatorid, key.getBytes( Lamilastatics.charset ) );
 	}
 
 	/**
@@ -269,31 +269,42 @@ public abstract class Node {
 	 * will be returned.
 	 */
 	public byte[] getKey( Integer layer ) {
-		return key.get( layer );
+		return keys.get( layer );
 	}
 
 	/**
 	 * Gets the key of this node on the given layer
 	 */
 	public byte[] getKey( Correlator layer ) {
-		return key.get( layer.getCorrelatorId() );
+		return keys.get( layer.getCorrelatorId() );
 	}
 
 	@Override
 	public String toString() {
 		byte[] key = getKey( MetaCorellator.id );
 		String name = new String( getUniqueId(), Lamilastatics.charset );// (key==null?new
-		// String(getNodeIdent(),
-		// Buffercontent.cset):new
-		// String(key,
-		// Buffercontent.cset));
+
 		String host = "";
 		try {
 			host = InetAddress.getByAddress( getHost() ).getHostAddress();
 		} catch ( UnknownHostException e ) {
 			host = "could not be resolved";
 		}
-		return getClass().getName() + " id: " + convertBytes2Long( getUniqueId() ) + " host: " + host + " port: " + getPort();
+
+		StringBuilder bui = new StringBuilder();
+		bui.append( getClass().getName() + "{ host: " + host + " port: " + getPort() + "\n" );
+		for( Integer i : this.keys.keySet() ) {
+			bui.append( i );
+			bui.append( ": " );
+			bui.append( keys.get( i ) );
+			bui.append( " | " );
+			bui.append( new String( keys.get( i ) ) );
+			bui.append( " | " );
+			bui.append( Node.convertBytes2Long( keys.get( i ) ) );
+			bui.append( "\n" );
+		}
+		bui.append( "}" );
+		return bui.toString();
 	}
 
 	/**
@@ -326,7 +337,7 @@ public abstract class Node {
 	 * The list is not ordered in a specific way.
 	 */
 	public LinkedList<Integer> layers() {
-		return new LinkedList<Integer>( key.keySet() );
+		return new LinkedList<Integer>( keys.keySet() );
 	}
 
 	/**
