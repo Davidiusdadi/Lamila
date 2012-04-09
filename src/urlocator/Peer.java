@@ -27,11 +27,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
@@ -78,7 +80,7 @@ public class Peer implements Messagehandler {
 	protected Hashtable<Integer,List<PacketListener>> waitingnodes;
 	protected Correlators correlators;
 	protected Hashtable<Integer,Long> timestamp;
-	protected LinkedList<Node> networkentys = new LinkedList<Node>();
+	protected Map<Integer,List<Node>> networkentys = new HashMap<Integer,List<Node>>();
 	protected static ExecutorService executor = Executors.newCachedThreadPool();
 	protected Timer timer = new Timer( "NetRefresh", true );
 	private DistributingPeerListener dls = new DistributingPeerListener();
@@ -396,7 +398,7 @@ public class Peer implements Messagehandler {
 		}
 		if( !newnode.isValid() )
 			throw new IllegalArgumentException( "node have to be valid ( isValid())" );
-		if( networkentys.isEmpty() ) {
+		if( getNetworkentrys( correlator.getCorrelatorId(), advisor.getNodeRequestTimeout() ).isEmpty() ) {
 			Lamilastatics.println( OutputKind.INFO, "hosting " + newnode.getUniqueId().toString() + " / " + new String( newnode.getUniqueId(), Lamilastatics.charset ) );
 			putNode( newnode.getUniqueId(), newnode );
 			Lamilastatics.println( OutputKind.INFO, "netentry " + new String( newnode.getUniqueId(), Lamilastatics.charset ) );
@@ -405,7 +407,7 @@ public class Peer implements Messagehandler {
 			nodes.add( newnode );
 		} else {
 			double time1 = System.currentTimeMillis() / (double) 1000;
-			nodes = searchFor( correlator, newnode.getKey( correlator.getCorrelatorId() ), advisor, networkentys );
+			nodes = searchFor( correlator, newnode.getKey( correlator.getCorrelatorId() ), advisor, networkentys.get( correlator.getCorrelatorId() ) );
 			double time2 = System.currentTimeMillis() / (double) 1000;
 			if( nodes == null || nodes.isEmpty() )
 				return null;
@@ -509,7 +511,16 @@ public class Peer implements Messagehandler {
 	 */
 	public void addNetworkEnty( Node n ) {
 		Lamilastatics.println( OutputKind.INFO, "Add Networkenty: " + n );
-		networkentys.add( n );
+		for( Integer ly : n.layers() ) {
+			byte[] key = n.getKey( ly );
+			List<Node> ent = networkentys.get( ly );
+			if( ent == null ) {
+				ent = new LinkedList<Node>();
+				networkentys.put( ly, ent );
+			}
+			if( !ent.contains( n ) )
+				ent.add( n );
+		}
 	}
 
 	/**
@@ -577,7 +588,10 @@ public class Peer implements Messagehandler {
 	 * @throws OperationFailedException
 	 */
 	public List<Node> getNetworkentrys( int correlatorid, int timeout ) throws OperationFailedException {
-		return fillInKey( networkentys, correlatorid, timeout );
+		List<Node> res = networkentys.get( new Integer( correlatorid ) );
+		if( res == null )
+			return Collections.emptyList();
+		return fillInKey( res, correlatorid, timeout );
 	}
 
 	/**
@@ -601,9 +615,9 @@ public class Peer implements Messagehandler {
 		return publish( correl, newnode, correl.getSearchAdvisor() );
 	}
 
-	public LinkedList<Integer> publish( Node newnode ) throws OperationFailedException {
-		LinkedList<Integer> layers = newnode.layers();
-		LinkedList<Integer> removed = new LinkedList<Integer>();
+	public List<Integer> publish( Node newnode ) throws OperationFailedException {
+		List<Integer> layers = newnode.layers();
+		List<Integer> removed = new LinkedList<Integer>();
 		for( Integer integ : layers ) {
 			Correlator correl = correlators.resolveCorrelator( integ );
 			try {

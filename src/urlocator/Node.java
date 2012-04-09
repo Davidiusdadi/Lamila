@@ -336,7 +336,7 @@ public abstract class Node {
 	 * Returns a new list, containing the layerid this node can be published at<br>
 	 * The list is not ordered in a specific way.
 	 */
-	public LinkedList<Integer> layers() {
+	public List<Integer> layers() {
 		return new LinkedList<Integer>( keys.keySet() );
 	}
 
