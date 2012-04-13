@@ -37,6 +37,7 @@ public class Correlators {
 			throw new IllegalArgumentException( "The Correlators " + c + " and other  have the same id." );
 		global_correlators.putCorrelator( c );
 	}
+
 	/** Returns if there has been registered a correlator with the given id. */
 	public static boolean isSuchCorrelatorRegistered( int cid ) {
 		return global_correlators.containsSuchCorrelator( cid );
@@ -66,9 +67,10 @@ public class Correlators {
 		if( c == null )
 			throw new IllegalArgumentException( "given Correlator must not be null" );
 
-		if( getCorrelator( c.getCorrelatorId() ) != null )
-			throw new IllegalArgumentException( this + " allready contains a correlator with the id " + c.getCorrelatorId() );
-
+		if( getCorrelator( c.getCorrelatorId() ) != null ) {
+			if( !getCorrelator( c.getCorrelatorId() ).equals( c ) )
+				throw new IllegalArgumentException( this + " allready contains an other correlator with the id " + c.getCorrelatorId() );
+		}
 		if( this != global_correlators ) { // to prevent recursion
 			if( !isSuchCorrelatorRegistered( c.getCorrelatorId() ) )
 				registerCorrelator( c );
