@@ -5,7 +5,7 @@ import searching.Fireworksearchstrategie;
 import searching.SearchAdvisor;
 
 public class Levensteincorrelator implements Correlator {
-	private static final int id = 3;
+	public static final int id = 3;
 	private static Levensteincorrelator inst = null;
 
 	public static Levensteincorrelator getInstance() {

@@ -12,8 +12,8 @@ import iospeci.PointerResponse;
 import iospeci.StoreRequest;
 import iospeci.transport.OrderMessage;
 import iospeci.transport.PacketPreview;
-import iospeci.transport.Reordermessage;
 import iospeci.transport.ResponsePreview;
+import iospeci.transport.UDPTransport.Reordermessage;
 import iospeci.transport.UDPTransport.UDPTransporter;
 
 import java.io.IOException;

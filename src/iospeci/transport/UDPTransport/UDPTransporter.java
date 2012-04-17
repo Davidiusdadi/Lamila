@@ -15,7 +15,6 @@ import iospeci.transport.OpenIdRange;
 import iospeci.transport.OrderMessage;
 import iospeci.transport.PacketPreview;
 import iospeci.transport.RecepientInputStream;
-import iospeci.transport.Reordermessage;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
