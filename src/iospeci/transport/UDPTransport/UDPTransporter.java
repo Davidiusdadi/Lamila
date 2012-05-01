@@ -45,7 +45,7 @@ public class UDPTransporter implements TransportLayer {
 	static {
 		Buffercontent.addOptainer( OrderMessage.class );
 		Buffercontent.addOptainer( PacketPreview.class );
-		Buffercontent.addOptainer( Reordermessage.class );
+		Buffercontent.addOptainer( ReorderMessage.class );
 
 		timer = new Timer( "PacketSheduler", true );
 	}
@@ -264,8 +264,8 @@ public class UDPTransporter implements TransportLayer {
 					Lamilastatics.println( "Resend" + order.getPacketId() + " failed" );
 			} else
 				todeliv.flush();// deliver the requested data for the first time
-		} else if( buf instanceof Reordermessage ) {
-			resent( socket.getLocalSocketAddress(), ( (Reordermessage) buf ).getOrederdpacketId() );
+		} else if( buf instanceof ReorderMessage ) {
+			resent( socket.getLocalSocketAddress(), ( (ReorderMessage) buf ).getOrederdpacketId() );
 		} else
 			throw new UnknowPacketTypeException( "Does not know how to handle" + buf );
 
@@ -476,7 +476,7 @@ public class UDPTransporter implements TransportLayer {
 			}
 			for( Integer id : missingpackages ) {
 				if( id < bid ) {
-					Reordermessage reord = new Reordermessage( id );
+					ReorderMessage reord = new ReorderMessage( id );
 					reord.setCryption( cryption );
 					byte[] bytes = encryptAsNessesary( (InetSocketAddress) adess, reord );
 					send( new DatagramPacket( bytes, bytes.length, adess ) );
@@ -509,7 +509,7 @@ public class UDPTransporter implements TransportLayer {
 			}
 			for( Integer id : missingpackages ) {
 
-				byte[] bytes = encryptAsNessesary( (InetSocketAddress) adess, new Reordermessage( id ) );
+				byte[] bytes = encryptAsNessesary( (InetSocketAddress) adess, new ReorderMessage( id ) );
 				try {
 					send( new DatagramPacket( bytes, bytes.length, adess ) );
 				} catch ( Exception e ) {

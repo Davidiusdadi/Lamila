@@ -13,7 +13,7 @@ import iospeci.StoreRequest;
 import iospeci.transport.OrderMessage;
 import iospeci.transport.PacketPreview;
 import iospeci.transport.ResponsePreview;
-import iospeci.transport.UDPTransport.Reordermessage;
+import iospeci.transport.UDPTransport.ReorderMessage;
 import iospeci.transport.UDPTransport.UDPTransporter;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class UDPTransporttest {
 	public UDPTransporttest() throws IOException {
 		Buffercontent.addOptainer( OrderMessage.class );
 		Buffercontent.addOptainer( PacketPreview.class );
-		Buffercontent.addOptainer( Reordermessage.class );
+		Buffercontent.addOptainer( ReorderMessage.class );
 		Buffercontent.addOptainer( KeyRequest.class );
 		Buffercontent.addOptainer( PointerRequest.class );
 		Buffercontent.addOptainer( StoreRequest.class );
