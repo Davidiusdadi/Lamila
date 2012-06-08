@@ -1,5 +1,6 @@
 package iospeci;
 
+import globalstatic.Lamilastatics;
 import iospeci.transport.OpenIdRange;
 
 import java.net.InetSocketAddress;
@@ -92,6 +93,115 @@ public abstract class Buffercontent {
 
 	public static byte getCryption( byte[] bytes ) {
 		return bytes[ 0 ];
+	}
+
+	public static void writeObject( final ByteBuffer bb, final Object value ) {
+		if( value instanceof Integer ) {
+			bb.putInt( 0 );
+			bb.putInt( Integer.SIZE / 8 );
+			bb.putInt( (Integer) value );
+		} else if( value instanceof String ) {
+			byte[] valuebytes = ( (String) value ).getBytes( Lamilastatics.charset );
+			bb.putInt( 1 );
+			bb.putInt( valuebytes.length );
+			bb.put( valuebytes );
+		} else if( value instanceof Double ) {
+			bb.putInt( 2 );
+			bb.putInt( Double.SIZE / 8 );
+			bb.putDouble( (Double) value );
+		} else if( value instanceof Long ) {
+			bb.putInt( 3 );
+			bb.putInt( Long.SIZE / 8 );
+			bb.putLong( (Long) value );
+		} else if( value instanceof Short ) {
+			bb.putInt( 4 );
+			bb.putInt( Short.SIZE / 8 );
+			bb.putShort( (Short) value );
+		} else if( value instanceof Character ) {
+			bb.putInt( 5 );
+			bb.putInt( Character.SIZE / 8 );
+			bb.putChar( (Character) value );
+		} else if( value instanceof byte[] ) {
+			byte[] valuebytes = ( (byte[]) value );
+			bb.putInt( 6 );
+			bb.putInt( valuebytes.length );
+			bb.put( (byte[]) value );
+			assert ( bb.position() == bb.capacity() );
+		} /*
+			* else if ( value instanceof WtField ) { WtField container = ( WtField ) value; bb.putInt( 7 ); bb.putInt( Integer.SIZE / 8 ); bb.putInt( container.size() ); assert ( bb.position() == bb.capacity() ); }
+			*/else {
+			throw new IllegalArgumentException( "No rule to send data of type" + value.getClass() );
+		}
+	}
+
+	public static int calculateObjectSize( final Object value ) {
+		int size = 8;
+		if( value instanceof Integer ) {
+			return size + Integer.SIZE / 8;
+		} else if( value instanceof String ) {
+			byte[] valuebytes = ( (String) value ).getBytes( Lamilastatics.charset );
+			return size + valuebytes.length;
+		} else if( value instanceof Double ) {
+			return size + Double.SIZE / 8;
+		} else if( value instanceof Long ) {
+			return size + Long.SIZE / 8;
+		} else if( value instanceof Short ) {
+			return size + Short.SIZE / 8;
+		} else if( value instanceof Character ) {
+			return size + Character.SIZE / 8;
+		} else if( value instanceof byte[] ) {
+			byte[] valuebytes = ( (byte[]) value );
+			return size + valuebytes.length;
+		} /*
+			* else if ( value instanceof WtField ) { WtField container = ( WtField ) value; return size + Integer.SIZE / 8; }
+			*/else {
+			throw new IllegalArgumentException( "No rule to encode object data of type" + ( value != null ? value.getClass() : "null" ) );
+		}
+	}
+
+	public static Object readObject( final ByteBuffer bb ) {
+		int typeid = bb.getInt();
+		int len = bb.getInt();
+
+		// valuebytes = new byte[)];
+		// bb.get(valuebytes);
+
+		switch ( typeid ) {
+			case 0:// Integer
+				Buffercontent.validateArLen( len, Integer.SIZE / 8, Integer.SIZE / 8 );
+				return bb.getInt();
+			case 1:// String
+				byte[] stringbytes = new byte[ len ];
+				bb.get( stringbytes );
+				return new String( stringbytes, Lamilastatics.charset );
+			case 2:// Double
+				Buffercontent.validateArLen( len, Double.SIZE / 8, Double.SIZE / 8 );
+				return bb.getDouble();
+			case 3:// Long
+				Buffercontent.validateArLen( len, Long.SIZE / 8, Long.SIZE / 8 );
+				return bb.getLong();
+			case 4:// Short
+				Buffercontent.validateArLen( len, Short.SIZE / 8, Short.SIZE / 8 );
+				return bb.getShort();
+			case 5:// Character
+				Buffercontent.validateArLen( len, Character.SIZE / 8, Character.SIZE / 8 );
+				return bb.getChar();
+			case 6:// byte[]
+				byte[] bytes = new byte[ len ];
+				bb.get( bytes );
+				return bytes;
+				/*
+				 * case 7 :// AbstractContainer Buffercontent.validateArLen( len , Integer.SIZE / 8 , Integer.SIZE / 8 );
+				 * 
+				 * if (tmpl instanceof MinimalListTemplate) { return new RemoteList<Object>(bb.getInt(), (MinimalListTemplate) tmpl); }
+				 * 
+				 * 
+				 * return new WtContainer( bb.getInt() );
+				 */
+			default :
+				throw new InvalidPackageException( "typeid " + typeid + " is unknow" );
+				// break;
+		}
 	}
 
 	private final int bufferoffset = 9 + 4;

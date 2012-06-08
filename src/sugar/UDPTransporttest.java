@@ -18,7 +18,6 @@ import iospeci.transport.UDPTransport.UDPTransporter;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import urlocator.IgnoringPackageException;
@@ -55,7 +54,7 @@ public class UDPTransporttest {
 		String testid = "Webtouch";
 		Loopback debughandler = new Loopback();
 		byte[] testbytes = testid.getBytes( Lamilastatics.charset );
-		InetSocketAddress adr = new InetSocketAddress( InetAddress.getByName( "localhost" ), 4430 );
+		InetSocketAddress adr = new InetSocketAddress( 4430 );
 		UDPTransporter trans = new UDPTransporter( new DatagramSocket( adr ) );
 		trans.setMessageHandler( debughandler );
 		trans.setCrypter( new CryptManager( adr ) );
